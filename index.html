@@ -17,7 +17,7 @@
 
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add_circle,cake,calendar_month,celebration,checklist,eco,emoji_events,euro,event_available,favorite,flag,flight_takeoff,format_list_bulleted,gavel,home,local_florist,local_pizza,lock,map,military_tech,palette,photo_camera,photo_library,play_circle,public,qr_code_scanner,savings,school,search,spa,star,sunny,swords,sync,thumb_up,track_changes,travel_explore,visibility_off,wine_bar,workspace_premium&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add_circle,cake,calendar_month,celebration,checklist,eco,emoji_events,euro,event_available,favorite,flag,flight_takeoff,format_list_bulleted,gavel,home,local_florist,local_pizza,lock,map,military_tech,new_releases,palette,photo_camera,photo_library,play_circle,public,qr_code_scanner,savings,school,search,spa,star,sunny,swords,sync,thumb_up,track_changes,travel_explore,visibility_off,wine_bar,workspace_premium&display=block">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: one narrow column like a tasting sheet on a clipboard; sticky tab bar, cards only for beers. */
@@ -443,7 +443,7 @@ span.inline{display:inline}
 @media (max-width:480px){.act-toggles{flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:6px 16px;width:100%}.info-more[open],.act-toggles .buy-more[open]{flex-basis:100%}}
 .lbl{display:inline-block;font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:999px;background:var(--amber);color:var(--surface);margin:0 4px 4px 0}
 .lbl-uitleg{display:block;margin-top:4px;color:var(--ink-2,var(--muted));font-size:12px;line-height:1.45}
-.h-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.upd{appearance:none;font:inherit;color:var(--ink);text-align:left;cursor:pointer;width:100%;display:flex;gap:12px;align-items:flex-start;padding:14px 14px 12px;border:1.5px solid var(--amber);border-radius:var(--r);background:var(--amber-soft);transition:opacity .25s,transform .25s}.upd-ic{color:var(--amber);font-size:24px;flex:none}.upd-main{flex:1;min-width:0}.upd-main b{display:block;font-size:15px;margin-bottom:4px}.upd-main ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.5}.upd-main small{display:block;margin-top:6px;color:var(--muted);font-size:12px}.upd-x{color:var(--muted);font-size:14px;flex:none}.upd-gone{opacity:0;transform:scale(.98)}.h-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 @media (max-width:560px){.h-tiles{grid-template-columns:repeat(2,1fr)}.h-tile:last-child:nth-child(odd){grid-column:1/-1}}
 .h-tile{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);min-width:0}
 .h-tile .ms{color:var(--muted);font-size:22px;width:22px;height:22px}
@@ -1401,7 +1401,7 @@ function viewHome(){
   const dateTile=cur?(t.datum?esc(fmtWhen(t.datum)):(t.datums||[]).length?`${t.datums.length} ${t.datums.length===1?"voorstel":"voorstellen"}, stem mee`:"Nog niet gepland"):"Eerst draaien";
   const todo=S.tastings.filter(x=>!myAnswer(x.id)).length;
   const tile=(ic,lab,val,cls="",extra="")=>`<div class="h-tile ${cls}"><span class="ms" aria-hidden="true">${ic}</span><small>${lab}</small><b>${val}</b>${extra}</div>`;
-  return `<div><h2>Home</h2><p class="muted">De volgende proeverij en wie er bovenaan staat.</p></div>
+  return `<div><h2>Home</h2><p class="muted">De volgende proeverij en wie er bovenaan staat.</p></div>${updateHtml()}
   ${todo?`<button class="h-todo" data-go="feed"><span class="ms" aria-hidden="true">wine_bar</span><span><b>${todo} ${todo===1?"vragenlijst wacht":"vragenlijsten wachten"} op jou</b><small>Ga naar Proeven</small></span><span aria-hidden="true">→</span></button>`:""}
   <div class="panel h-next"><h3>Volgende proeverij</h3>
     <div class="h-tiles">
@@ -2187,7 +2187,16 @@ function maybeCelebrate(){
   if(S.tab==="res"&&S.avond){const a=avonden().find(x=>x.k===S.avond);if(a&&avondStats(a.ts).rank[0])S.demo?beerConfetti():celebrateOnce("avond:"+S.avond)}
   else if(S.tab==="home"&&!S.wheel&&!S.touring){const w=lastWinner();if(w)celebrateOnce("avond:"+w.k)}
 }
+
+/* ---------- nieuw in de app ---------- */
+const UPDATE_ID="2026-10-27",UPDATE_ITEMS=["Ruim 1600 wijnen: veel meer uit Frankrijk, Italië en Spanje", "Blind proeven: raad ook het land en de druif", "Nieuw spel: duel duur tegen goedkoop (bij Wijnen)", "13 nieuwe badges, nu in een eigen tabje bij Uitslag", "Aantal wijnen per land in het landfilter", "Nieuwe talen: Italiaans en Hongaars", "Rustiger donkere modus in bordeaux en goud"];
+function updateSeen(){if(S.updSeen===UPDATE_ID)return true;try{return localStorage.getItem("wp-update-seen")===UPDATE_ID}catch(e){return false}}
+function updateHtml(){if(S.touring||updateSeen())return "";
+  return `<button type="button" class="upd" data-update-close aria-label="Nieuw in de app, tik om te sluiten"><span class="ms upd-ic" aria-hidden="true">new_releases</span><span class="upd-main"><b>Nieuw in de app</b><ul>${UPDATE_ITEMS.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><small>Tik om te sluiten</small></span><span class="upd-x" aria-hidden="true">✕</span></button>`}
+function bindUpdate(){document.querySelectorAll("[data-update-close]").forEach(b=>b.onclick=()=>{S.updSeen=UPDATE_ID;try{localStorage.setItem("wp-update-seen",UPDATE_ID)}catch(e){}b.classList.add("upd-gone");setTimeout(()=>b.remove(),250)})}
+
 function bind(){
+  bindUpdate();
   document.querySelectorAll("[data-go-badges]").forEach(b=>b.onclick=()=>{S.tab="res";S.resTab="badges";S.tid=null;S.avond=null;S.wheel=false;render();window.scrollTo(0,0)});
   document.querySelectorAll("[data-restab]").forEach(b=>b.onclick=()=>{S.resTab=b.dataset.restab;render();window.scrollTo(0,0)});
   bindDuel();
