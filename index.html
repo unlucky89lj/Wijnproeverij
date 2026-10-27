@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Wijnproeverij</title>
 <meta name="description" content="Samen blind wijn proeven: rad, vragenlijst, uitslag en wijnlijst.">
-<meta name="theme-color" content="#8E1630">
+<meta name="theme-color" content="#6E1A2D">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -24,7 +24,7 @@
 :root{
   --bg:#F2EFF0; --sea:#DCE4EA; --surface:#FFFFFF; --sunk:#E7E1E4; --line:#D6CCD1;
   --ink:#1E1519; --muted:#6C5F66;
-  --amber:#8E1630; --amber-soft:#F3DCE2; --hop:#4F6B3A; --hop-soft:#DFE8D5;
+  --amber:#6E1A2D; --amber-soft:#EEDCE0; --hop:#4F6B3A; --hop-soft:#DFE8D5;
   --danger:#A6352A;
   --f-display:"Cormorant Garamond","Cormorant",Georgia,"Times New Roman",serif;
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -34,12 +34,12 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#150F12; --sea:#111A20; --surface:#1F171B; --sunk:#2A2025; --line:#3B2E35;
   --ink:#F0E6EB; --muted:#A8959F;
-  --amber:#E27A96; --amber-soft:#3D1A25; --hop:#9DBE7C; --hop-soft:#243020;
+  --amber:#D88A9B; --amber-soft:#3A1720; --hop:#9DBE7C; --hop-soft:#243020;
   --danger:#E07A6E; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#150F12; --sea:#111A20; --surface:#1F171B; --sunk:#2A2025; --line:#3B2E35;
   --ink:#F0E6EB; --muted:#A8959F;
-  --amber:#E27A96; --amber-soft:#3D1A25; --hop:#9DBE7C; --hop-soft:#243020;
+  --amber:#D88A9B; --amber-soft:#3A1720; --hop:#9DBE7C; --hop-soft:#243020;
   --danger:#E07A6E; color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -379,7 +379,7 @@ span.inline{display:inline}
 .map-panel{padding:10px}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);padding:4px 6px 0}
 .lg{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px;border:1px solid var(--line)}
-.lg.lo{background:var(--amber-soft)}.lg.mid{background:#C4566F}.lg.hi{background:var(--amber)}.lg.none{background:var(--sunk)}
+.lg.lo{background:var(--amber-soft)}.lg.mid{background:#9E4357}.lg.hi{background:var(--amber)}.lg.none{background:var(--sunk)}
 .reg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
 .reg-card{appearance:none;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);color:var(--ink);cursor:pointer;font-family:var(--f-body)}
 .reg-card:hover{border-color:var(--amber)}
@@ -427,7 +427,7 @@ span.inline{display:inline}
 .tour button{appearance:none;border:1px solid currentColor;background:transparent;color:inherit;border-radius:999px;padding:4px 10px;font:600 12px var(--f-body);text-transform:none;cursor:pointer;flex:none}
 .tour[hidden],.toast[hidden]{display:none}
 .tour-cta{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;border-top:1px solid var(--line);padding-top:14px}
-.tap-dot{position:fixed;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(142,22,48,.3);border:2px solid #8E1630;pointer-events:none;z-index:40;animation:tap .65s ease-out forwards}
+.tap-dot{position:fixed;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(110,26,45,.3);border:2px solid #6E1A2D;pointer-events:none;z-index:40;animation:tap .65s ease-out forwards}
 @keyframes tap{from{transform:scale(.4);opacity:1}to{transform:scale(1.4);opacity:0}}
 @media (prefers-reduced-motion:reduce){.tap-dot{animation-duration:.3s}}
 .act-toggles{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
@@ -1539,7 +1539,7 @@ function avg(list,k){const v=list.map(a=>a[k]).filter(x=>typeof x==="number"&&x>
 function mode(list,k){const c={};list.forEach(a=>{if(a[k])c[a[k]]=(c[a[k]]||0)+1});return Object.entries(c).sort((a,b)=>b[1]-a[1])[0]?.[0]||""}
 
 function closeness(a,described){const fz=a&&a.id&&S.frozenPA&&S.frozenPA[a.id];if(fz)return {hits:fz.hits,pct:fz.pct};if(!described.size)return null;const picked=new Set([...(a.aroma||[]),...(a.smaak||[])]);const hits=[...picked].filter(x=>described.has(x)).length;return {hits,pct:Math.round(200*hits/(picked.size+described.size))}}
-const crownName=html=>`<span class="crowned"><svg class="champ" viewBox="0 0 32 44" aria-hidden="true"><path d="M6 11h18l1.4-8-5 4L16 1l-4.4 6-5-4z" fill="#D9A21B"/><rect x="6" y="11" width="18" height="2" rx="1" fill="#D9A21B"/><path d="M8 16h16c0 8-3.2 12-8 12s-8-4-8-12z" fill="#F4EEF3" stroke="#6E1023" stroke-width="1.4"/><path d="M8.7 20h14.6c-.9 5-3.4 8-7.3 8s-6.4-3-7.3-8z" fill="#8E1630"/><path d="M16 28v10M11 41h10" stroke="#6E1023" stroke-width="1.8" stroke-linecap="round"/><path d="M11 18.5c.3 2 .8 3.4 1.6 4.6" stroke="#fff" stroke-opacity=".6" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg><span class="sr">Winnaar: </span>${html}</span>`;
+const crownName=html=>`<span class="crowned"><svg class="champ" viewBox="0 0 32 44" aria-hidden="true"><path d="M6 11h18l1.4-8-5 4L16 1l-4.4 6-5-4z" fill="#D9A21B"/><rect x="6" y="11" width="18" height="2" rx="1" fill="#D9A21B"/><path d="M8 16h16c0 8-3.2 12-8 12s-8-4-8-12z" fill="#F4EEF3" stroke="#6E1023" stroke-width="1.4"/><path d="M8.7 20h14.6c-.9 5-3.4 8-7.3 8s-6.4-3-7.3-8z" fill="#6E1A2D"/><path d="M16 28v10M11 41h10" stroke="#6E1023" stroke-width="1.8" stroke-linecap="round"/><path d="M11 18.5c.3 2 .8 3.4 1.6 4.6" stroke="#fff" stroke-opacity=".6" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg><span class="sr">Winnaar: </span>${html}</span>`;
 function rankingHtml(rows,title,note){if(!rows.length)return "";return `<div class="panel"><h3>${title}</h3><ol class="rank">${rows.map((r,i)=>`<li${r.uid===S.me?' class="me"':''}><span class="pos mono">${i+1}</span><img data-uid="${esc(r.uid)}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><b>${i===0?crownName(who(r.uid)):who(r.uid)}</b><span class="mono rank-val">${r.pct}%</span><span class="rank-sub">${esc(r.sub)}</span></li>`).join("")}</ol><p class="note">${note}</p></div>`}
 function globalRanking(){const per={};S.answers.forEach(a=>{const t=S.tastings.find(x=>x.id===a.tid);if(!t)return;const c=closeness(a,new Set(beerOf(t).smaken||[]));if(!c)return;(per[a.uid]=per[a.uid]||[]).push(c.pct)});
   return Object.entries(per).map(([uid,v])=>({uid,pct:Math.round(v.reduce((s,x)=>s+x,0)/v.length),sub:`${v.length} ${v.length===1?"wijn":"wijnen"}`})).sort((a,b)=>b.pct-a.pct)}
@@ -1695,7 +1695,7 @@ function viewAvond(k){
   if(!ts)return back+`<div class="empty"><p class="muted">Deze proefavond bestaat niet meer.</p></div>`;
   const st=avondStats(ts), w=st.rank[0];
   return back+`<div><div class="origin">Proefavond${avondLoc(ts)?" · "+esc(avondLoc(ts)):""}${avondBlind(ts)?" · blind":""}${S.archive&&S.archive[k]?" · uitslag vastgelegd":""}</div><h2>${esc(avondLabel(k))}</h2><p class="muted">${ts.length} ${ts.length===1?"wijn":"wijnen"} · ${st.proevers} ${st.proevers===1?"proever":"proevers"} · ${st.as.length} ingevulde lijsten</p></div>
-  ${w?`<div class="winner"><div class="winner-crown"><svg class="champ" viewBox="0 0 32 44" aria-hidden="true"><path d="M6 11h18l1.4-8-5 4L16 1l-4.4 6-5-4z" fill="#D9A21B"/><rect x="6" y="11" width="18" height="2" rx="1" fill="#D9A21B"/><path d="M8 16h16c0 8-3.2 12-8 12s-8-4-8-12z" fill="#F4EEF3" stroke="#6E1023" stroke-width="1.4"/><path d="M8.7 20h14.6c-.9 5-3.4 8-7.3 8s-6.4-3-7.3-8z" fill="#8E1630"/><path d="M16 28v10M11 41h10" stroke="#6E1023" stroke-width="1.8" stroke-linecap="round"/><path d="M11 18.5c.3 2 .8 3.4 1.6 4.6" stroke="#fff" stroke-opacity=".6" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div><img data-uid="${esc(w.uid)}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><div class="winner-label">Winnaar van de avond</div><div class="winner-name">${who(w.uid)}</div><p class="note">${w.pct}% treffers over ${w.n} ${w.n===1?"wijn":"wijnen"}</p><button type="button" class="btn ghost small" data-confetti>Proost! Nog een keer confetti</button></div>`
+  ${w?`<div class="winner"><div class="winner-crown"><svg class="champ" viewBox="0 0 32 44" aria-hidden="true"><path d="M6 11h18l1.4-8-5 4L16 1l-4.4 6-5-4z" fill="#D9A21B"/><rect x="6" y="11" width="18" height="2" rx="1" fill="#D9A21B"/><path d="M8 16h16c0 8-3.2 12-8 12s-8-4-8-12z" fill="#F4EEF3" stroke="#6E1023" stroke-width="1.4"/><path d="M8.7 20h14.6c-.9 5-3.4 8-7.3 8s-6.4-3-7.3-8z" fill="#6E1A2D"/><path d="M16 28v10M11 41h10" stroke="#6E1023" stroke-width="1.8" stroke-linecap="round"/><path d="M11 18.5c.3 2 .8 3.4 1.6 4.6" stroke="#fff" stroke-opacity=".6" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div><img data-uid="${esc(w.uid)}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><div class="winner-label">Winnaar van de avond</div><div class="winner-name">${who(w.uid)}</div><p class="note">${w.pct}% treffers over ${w.n} ${w.n===1?"wijn":"wijnen"}</p><button type="button" class="btn ghost small" data-confetti>Proost! Nog een keer confetti</button></div>`
     :`<div class="empty"><p class="muted">Er is nog geen winnaar: vul de vragenlijsten in.</p></div>`}
   ${rankingHtml(st.rank,"Ranglijst van de avond","Gemiddelde treffer-score over de wijnen van deze avond.")}
   <div class="panel"><h3>Wijnen van de avond</h3><div class="list">${ts.map(t=>{const b=st.beers.find(x=>x.t.id===t.id),top=st.beers[0]&&st.beers[0].t.id===t.id;
@@ -1802,7 +1802,7 @@ function drawMap(){
       :window.d3.geo.equirectangular().scale(Math.min(w/6.5,h/3.3)).translate([w/2,h/2]);
     return {path:window.d3.geo.path().projection(pr),projection:pr}}:undefined;
   try{S.map=new window.Datamap({element:el,scope:"world",responsive:!proj,projection:"mercator",setProjection:proj,
-    fills:{defaultFill:g("--sunk"),lo:g("--amber-soft"),mid:"#C4566F",hi:g("--amber")},data,
+    fills:{defaultFill:g("--sunk"),lo:g("--amber-soft"),mid:"#9E4357",hi:g("--amber")},data,
     geographyConfig:{borderColor:g("--surface"),borderWidth:.6,highlightOnHover:true,highlightFillColor:g("--hop"),highlightBorderColor:g("--surface"),
       popupTemplate:(geo,d)=>`<div class="map-pop"><b>${esc(d?d.land:geo.properties.name)}</b>${d?` · ${d.n} ${d.n===1?"wijn":"wijnen"}`:" · nog niet geproefd"}</div>`}});
   }catch(e){el.innerHTML='<p class="note">De kaart kon niet laden.</p>'}
@@ -1873,7 +1873,7 @@ function evTimes(t){const [d,tm]=t.datum.split("T"),[y,mo,da]=d.split("-").map(N
 function icsFor(t,feed){
   const {zs,ze}=evTimes(t);const clean=x=>String(x).replace(/[\;,]/g,m=>"\\"+m).replace(/\n/g,"\\n");
   const desc=(t.blind?"Blind proeven: de wijnen krijgen nummers (Wijn 1, 2, 3…) en worden na afloop onthuld. ":"Normaal proeven. ")+"Thema: "+themeName(t)+(t.stijl?" ("+(groupOf(t.stijl)?.[1].join(", ")||"")+")":"")+". Vul na elke wijn de vragenlijst in de app in. Proost!";
-  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Wijnproeverij//NL","CALSCALE:GREGORIAN","METHOD:PUBLISH",...(feed?["X-WR-CALNAME:🍷 Wijnproeverij","X-APPLE-CALENDAR-COLOR:#8E1630","COLOR:darkred","X-WR-TIMEZONE:Europe/Amsterdam","REFRESH-INTERVAL;VALUE=DURATION:PT3H","X-PUBLISHED-TTL:PT3H"]:[]),"BEGIN:VEVENT",`UID:wp-${t.at||zs}@proefgroep`,`SEQUENCE:${t.rev||0}`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").slice(0,15)}Z`,
+  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Wijnproeverij//NL","CALSCALE:GREGORIAN","METHOD:PUBLISH",...(feed?["X-WR-CALNAME:🍷 Wijnproeverij","X-APPLE-CALENDAR-COLOR:#6E1A2D","COLOR:darkred","X-WR-TIMEZONE:Europe/Amsterdam","REFRESH-INTERVAL;VALUE=DURATION:PT3H","X-PUBLISHED-TTL:PT3H"]:[]),"BEGIN:VEVENT",`UID:wp-${t.at||zs}@proefgroep`,`SEQUENCE:${t.rev||0}`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").slice(0,15)}Z`,
     `DTSTART:${zs}`,"COLOR:darkred",`DTEND:${ze}`,`SUMMARY:${clean("🍷 Wijnproeverij"+(t.blind?" (blind)":"")+": "+themeName(t))}`,`DESCRIPTION:${clean(desc)}`,...(locText(t)?[`LOCATION:${clean(locText(t))}`]:[]),
     "BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${clean("🍷 Morgen wijnproeverij: "+themeName(t))}`,"TRIGGER:-P1D","END:VALARM",
     "BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${clean("🍷 Over 2 uur wijnproeverij! Proost!")}`,"TRIGGER:-PT2H","END:VALARM",
@@ -2024,7 +2024,7 @@ function beerConfetti(ms=4200){
   const dpr=Math.min(2,devicePixelRatio||1),W=innerWidth,H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext("2d");x.scale(dpr,dpr);
   const kinds=["glass","glass","glass","grape","grape","bubble","bubble","drop"],N=Math.round(Math.min(170,W*.42));
   const P=Array.from({length:N},(_,i)=>{const k=kinds[i%kinds.length];return {k,x:Math.random()*W,y:-20-Math.random()*H*.6,vx:(Math.random()-.5)*2.2,vy:2+Math.random()*3.2,r:Math.random()*6.28,vr:(Math.random()-.5)*.14,s:k==="glass"?11+Math.random()*7:k==="grape"?7+Math.random()*4:3+Math.random()*5,sw:Math.random()*6.28,wit:Math.random()<.3}});
-  const glass=(s,wit)=>{x.fillStyle=wit?"#E8D27A":"#8E1630";x.beginPath();x.moveTo(-s*.45,-s*.15);x.quadraticCurveTo(-s*.45,s*.45,0,s*.45);x.quadraticCurveTo(s*.45,s*.45,s*.45,-s*.15);x.closePath();x.fill();
+  const glass=(s,wit)=>{x.fillStyle=wit?"#E8D27A":"#6E1A2D";x.beginPath();x.moveTo(-s*.45,-s*.15);x.quadraticCurveTo(-s*.45,s*.45,0,s*.45);x.quadraticCurveTo(s*.45,s*.45,s*.45,-s*.15);x.closePath();x.fill();
     x.strokeStyle="rgba(255,255,255,.9)";x.lineWidth=s*.08;x.beginPath();x.moveTo(-s*.5,-s*.55);x.quadraticCurveTo(-s*.55,s*.48,0,s*.5);x.quadraticCurveTo(s*.55,s*.48,s*.5,-s*.55);x.stroke();
     x.beginPath();x.moveTo(0,s*.5);x.lineTo(0,s*1.05);x.moveTo(-s*.3,s*1.08);x.lineTo(s*.3,s*1.08);x.stroke()};
   const grape=s=>{const pts=[[0,-.5],[-.3,-.5],[.3,-.5],[-.15,-.22],[.15,-.22],[-.3,-.22],[.3,-.22],[0,.05],[-.15,.32],[.15,.32],[0,.58]];
@@ -2036,7 +2036,7 @@ function beerConfetti(ms=4200){
       x.save();x.translate(p.x,p.y);x.rotate(p.k==="bubble"?0:p.r);
       if(p.k==="glass")glass(p.s,p.wit);else if(p.k==="grape")grape(p.s);
       else if(p.k==="bubble"){x.strokeStyle="rgba(217,162,27,.9)";x.lineWidth=1.6;x.beginPath();x.arc(0,0,p.s,0,6.28);x.stroke();x.fillStyle="rgba(255,255,255,.7)";x.beginPath();x.arc(-p.s*.35,-p.s*.35,p.s*.25,0,6.28);x.fill()}
-      else{x.fillStyle="#A3203F";x.beginPath();x.moveTo(0,-p.s*1.2);x.quadraticCurveTo(p.s,0,0,p.s);x.quadraticCurveTo(-p.s,0,0,-p.s*1.2);x.fill()}
+      else{x.fillStyle="#7A1F33";x.beginPath();x.moveTo(0,-p.s*1.2);x.quadraticCurveTo(p.s,0,0,p.s);x.quadraticCurveTo(-p.s,0,0,-p.s*1.2);x.fill()}
       x.restore()}
     el<ms?requestAnimationFrame(step):cv.remove()};
   requestAnimationFrame(step);

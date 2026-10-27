@@ -1,5 +1,5 @@
 /* Eenvoudige service worker: altijd eerst het netwerk (zodat updates direct zichtbaar zijn), bij geen verbinding de laatst bewaarde versie. */
-const C = "wijnproeverij-v2";
+const C = "wijnproeverij-v3";
 self.addEventListener("install", e => self.skipWaiting());
 self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
 self.addEventListener("fetch", e => {
