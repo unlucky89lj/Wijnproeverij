@@ -244,7 +244,7 @@ b.inline{display:inline;font-size:inherit}
 .cmp{display:grid;grid-template-columns:60px 1fr;gap:8px;align-items:start;padding:3px 0}
 .cmp-l{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding-top:5px}
 .cmp .chip{cursor:default;padding:3px 9px;font-size:12px}
-.chip.miss{border-color:var(--danger);color:var(--danger);background:transparent}
+.duel summary{cursor:pointer;display:flex;flex-direction:column;gap:4px;list-style:none}.duel summary::-webkit-details-marker{display:none}.duel summary b{font-size:15px}.duel summary b::after{content:' ▾';color:var(--muted)}.duel[open] summary b::after{content:' ▴'}.duel-pair{display:flex;flex-direction:column;margin:10px 0}.duel-row{display:grid;grid-template-columns:76px 1fr auto auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.08);text-align:left;width:100%}.duel-lbl{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.duel-prijs{white-space:nowrap}.duel-verdict{font-size:16px;margin:4px 0}.duel-tag{margin:0 0 8px}.raad-list{display:flex;flex-direction:column;gap:8px}.raad-row{display:flex;flex-direction:column;gap:4px}.chip.miss{border-color:var(--danger);color:var(--danger);background:transparent}
 .chip.ghost{border-style:dashed;color:var(--muted);background:transparent}
 .pbar{display:grid;grid-template-columns:72px 1fr 36px;gap:10px;align-items:start;font-size:13px}
 .pbar>span:first-child{padding-top:0}
@@ -1035,7 +1035,7 @@ function viewCatalog(){
   const rows=S.catalog.map((c,i)=>({...c,i})).filter(c=>(!S.cNew||c.extraId)&&(!fs||c.stijl===fs)&&(!fl||c.land===fl)&&(!grp||grp[1].includes(styleKey(c.stijl)))&&(!q||[c.naam,c.brouwerij,c.plaats,c.regio,c.land,c.stijl,(c.druiven||[]).join(" ")].join(" ").toLowerCase().includes(q)))
     .sort(S.cNew?(a,b)=>(b.at||0)-(a.at||0):(a,b)=>a.naam.localeCompare(b.naam,"nl"));
   const lim=S.cLimit||40, shown=rows.slice(0,lim);
-  return head+`${glassGuide()}${S.canWrite&&S.db&&S.me?`<button class="btn amber" id="add-beer" style="align-self:flex-start">+ Wijn toevoegen</button>`:""}<div class="listbar"><input type="search" id="cq" placeholder="Zoek op wijn, wijnhuis, druif, streek of land" value="${esc(S.cq||"")}">
+  return head+`${duelPanel()}${glassGuide()}${S.canWrite&&S.db&&S.me?`<button class="btn amber" id="add-beer" style="align-self:flex-start">+ Wijn toevoegen</button>`:""}<div class="listbar"><input type="search" id="cq" placeholder="Zoek op wijn, wijnhuis, druif, streek of land" value="${esc(S.cq||"")}">
     <div class="filters"><label>Stijl<select id="c-stijl"><option value="">Alle stijlen</option>${stijlen.map(x=>`<option${x===fs?" selected":""}>${esc(x)}</option>`).join("")}</select></label>
     <label>Land<select id="c-land"><option value="">Alle landen</option>${landen.map(x=>`<option${x===fl?" selected":""}>${esc(x)}</option>`).join("")}</select></label></div></div>
   <div class="chips">${grp?`<button type="button" class="chip" aria-pressed="true" id="clear-group">Thema: ${esc(grp[0])} ✕</button>`:""}${S.catExtra.length?`<button type="button" class="chip" id="c-new" aria-pressed="${!!S.cNew}">Nieuw toegevoegd (${S.catExtra.length})</button>`:""}</div>
@@ -1480,7 +1480,7 @@ function spinWheel(){
 
 function applyTheme(t){if(!t)return;S.tab="list";S.listMode="alle";S.tid=null;S.wheel=false;S.cq="";S.cLimit=40;
   S.cStijl="";S.cGroup=t.stijl||"";S.cLand=t.land||"";render();window.scrollTo(0,0)}
-function blankDraft(){return {kleur:"",helderheid:"",schuim:"",aromaInt:0,aroma:[],zoet:0,bitter:0,zuur:0,smaak:[],body:0,koolzuur:0,afdronk:"",score:3,opmerking:""}}
+function blankDraft(){return {raadLand:"",raadDruif:"",duelGok:"",kleur:"",helderheid:"",schuim:"",aromaInt:0,aroma:[],zoet:0,bitter:0,zuur:0,smaak:[],body:0,koolzuur:0,afdronk:"",score:3,opmerking:""}}
 
 /* ---------- blind proeven ---------- */
 const isHiddenT=t=>!!(t&&t.blind&&!t.onthuld&&t.by!==S.me);
@@ -1512,7 +1512,7 @@ function scaleRow(key,val){const [l,lo,hi]=SCALES[key];return `<div class="sub">
 function viewForm(tid,mine){
   const d=S.drafts[tid]||(S.drafts[tid]=mine?{...blankDraft(),...structuredClone(mine)}:blankDraft());
   const tq=S.tastings.find(x=>x.id===tid);
-  return `<div><h2>Vragenlijst${tq&&tq.blind?` · Wijn ${tq.nr||"?"}`:""}</h2><p class="muted">${tq&&tq.blind?(tq.by===S.me&&!tq.onthuld?"Blind proeven: jij hebt deze wijn gestart, de anderen zien alleen het nummer. ":tq.onthuld?"Deze wijn is onthuld. ":"Blind proeven: je weet niet welke wijn dit is. "):""}Proef eerst, vul dan in. Na het opslaan zie je hoe de groep de wijn beoordeelt en hoe het officieel omschreven wordt.</p></div>
+  return `<div><h2>Vragenlijst${tq&&tq.blind?` · Wijn ${tq.nr||"?"}`:""}</h2><p class="muted">${tq&&tq.blind?(tq.by===S.me&&!tq.onthuld?"Blind proeven: jij hebt deze wijn gestart, de anderen zien alleen het nummer. ":tq.onthuld?"Deze wijn is onthuld. ":"Blind proeven: je weet niet welke wijn dit is. "):""}${tq&&tq.duel&&!(tq.by===S.me&&!tq.onthuld)?`<b>Duel: één van de twee wijnen is duur, de andere goedkoop.</b> `:""}Proef eerst, vul dan in. Na het opslaan zie je hoe de groep de wijn beoordeelt en hoe het officieel omschreven wordt.</p></div>
   <form class="sheet" id="qform" data-tid="${esc(tid)}">
     <div class="q"><div class="q-head"><h3>1 · Uiterlijk</h3><span class="mono">kleur van de wijn</span></div>
       <div class="swatches" data-group="kleur" data-multi="0">${COLORS.map(c=>`<button type="button" class="swatch" data-val="${c.k}" aria-pressed="${d.kleur===c.k}"><i style="background:${c.c}"></i>${c.n}<small>${c.ebc}</small></button>`).join("")}</div>
@@ -1525,6 +1525,7 @@ function viewForm(tid,mine){
     <div class="q"><div class="q-head"><h3>4 · Mondgevoel</h3></div>
       ${scaleRow("body",d.body)}${scaleRow("koolzuur",d.koolzuur)}
       <div class="sub"><label>Afdronk</label>${chipGroup("afdronk",["Kort","Middel","Lang"],d.afdronk)}</div></div>
+    ${raadForm(tq,d)}
     <div class="q"><div class="q-head"><h3>5 · Eindoordeel</h3><span class="mono">0,25 – 5</span></div>
       <div style="display:flex;align-items:center;gap:16px"><output class="score-out" id="score-out">${fmt(d.score)}</output><input type="range" id="score" min="0.25" max="5" step="0.25" value="${d.score}" aria-label="Score"></div>
       <div class="sub"><label for="opmerking">Opmerking voor de groep</label><textarea id="opmerking" placeholder="Wat viel je op?">${esc(d.opmerking)}</textarea></div>
@@ -1535,10 +1536,106 @@ function viewForm(tid,mine){
   </form>`;
 }
 
+
+/* ---------- raad de wijn ---------- */
+const RAAD_LANDEN=["Frankrijk","Italië","Spanje","Portugal","Duitsland","Oostenrijk","Verenigde Staten","Argentinië","Chili","Australië","Nieuw-Zeeland","Zuid-Afrika","Anders"];
+const RAAD_DRUIVEN=["Cabernet Sauvignon","Merlot","Pinot Noir","Syrah","Grenache","Tempranillo","Sangiovese","Nebbiolo","Malbec","Gamay","Zinfandel","Chardonnay","Sauvignon Blanc","Riesling","Chenin Blanc","Pinot Grigio","Gewürztraminer","Viognier","Albariño","Glera","Andere druif"];
+const GRAPE_ALIAS={"shiraz":"syrah","garnacha":"grenache","garnacha tinta":"grenache","cannonau":"grenache","tinta de toro":"tempranillo","tinto fino":"tempranillo","tinta roriz":"tempranillo","aragonez":"tempranillo","pinot grigio":"pinot gris","grauburgunder":"pinot gris","primitivo":"zinfandel","nielluccio":"sangiovese","chiavennasca":"nebbiolo","spätburgunder":"pinot noir","spatburgunder":"pinot noir","alvarinho":"albariño","albarino":"albariño","gewurztraminer":"gewürztraminer","moscato":"muscat","moscatel":"muscat"};
+const gCanon=x=>{const n=String(x||"").toLowerCase().trim();return GRAPE_ALIAS[n]||n};
+const RAAD_KNOWN=RAAD_DRUIVEN.map(gCanon);
+function raadTruth(tid){
+  const raw=(S.tRaw||S.tastings).find(x=>x.id===tid);if(!raw)return null;
+  const b=(S.bRaw||S.beers||{})[raw.beerKey]||{},cm=catMatch({naam:raw.naam,brouwerij:raw.brouwerij})||{};
+  const names=(Array.isArray(b.druiven)&&b.druiven.length?b.druiven:cm.druiven||[]).map(String);
+  return {raw,land:raw.land||b.land||cm.land||"",names,druiven:names.map(gCanon),rol:raw.duel&&raw.duel.rol||"",prijs:+b.prijs||+cm.prijs||0,naam:raw.naam||""};
+}
+function raadScore(a){
+  if(!a||!(a.raadLand||a.raadDruif||a.duelGok))return null;
+  const t=S.tastings.find(x=>x.id===a.tid);if(!t||t.masked)return null;
+  const tr=raadTruth(a.tid);if(!tr)return null;const list=[];
+  if(a.raadLand&&tr.land)list.push({label:"Land",mine:a.raadLand,juist:tr.land,ok:a.raadLand==="Anders"?!RAAD_LANDEN.includes(tr.land):a.raadLand===tr.land});
+  if(a.raadDruif&&tr.druiven.length)list.push({label:"Druif",mine:a.raadDruif,juist:tr.names.slice(0,3).join(", "),ok:a.raadDruif==="Andere druif"?!RAAD_KNOWN.includes(tr.druiven[0]):tr.druiven.slice(0,2).includes(gCanon(a.raadDruif))});
+  if(a.duelGok&&tr.rol){const L=k=>k==="duur"?"De dure fles":"De goedkope fles";list.push({label:"Duur of goedkoop",mine:L(a.duelGok),juist:L(tr.rol),ok:a.duelGok===tr.rol})}
+  return list.length?{list,good:list.filter(x=>x.ok).length,tot:list.length}:null;
+}
+function closeness(a,described){
+  const fz=a&&a.id&&S.frozenPA&&S.frozenPA[a.id];if(fz)return {hits:fz.hits,pct:fz.pct};
+  const c=aromaCloseness(a,described),r=raadScore(a);if(!r)return c;
+  const w=Math.min(.6,.2*r.tot),rp=100*r.good/r.tot;
+  return {hits:c?c.hits:0,pct:Math.round(c?c.pct*(1-w)+rp*w:rp)};
+}
+function raadForm(tq,d){
+  if(!tq||(tq.by===S.me&&!tq.onthuld))return "";
+  const blind=!!tq.blind,duel=!!tq.duel;if(!blind&&!duel)return "";
+  return `<div class="q raad"><div class="q-head"><h3>Raad de wijn</h3><span class="mono">telt mee voor je score</span></div>
+    ${blind?`<div class="sub"><label>Uit welk land?</label>${chipGroup("raadLand",RAAD_LANDEN,d.raadLand||"")}</div><div class="sub"><label>Welke (hoofd)druif?</label>${chipGroup("raadDruif",RAAD_DRUIVEN,d.raadDruif||"")}</div>`:""}
+    ${duel?`<div class="sub"><label>Is dit de dure of de goedkope fles?</label><div class="chips" data-group="duelGok" data-multi="0">${[["duur","De dure fles"],["goedkoop","De goedkope fles"]].map(([k,l])=>`<button type="button" class="chip" data-val="${k}" aria-pressed="${d.duelGok===k}">${l}</button>`).join("")}</div></div>`:""}
+    <p class="note">Land, druif en duur of goedkoop tellen elk voor 20% mee in je score.</p></div>`;
+}
+function raadPanel(t,as){
+  if(t.masked)return "";const tr=raadTruth(t.id);if(!tr)return "";
+  const rows=as.map(a=>({a,r:raadScore(a)})).filter(x=>x.r);
+  const duel=tr.rol?`<p class="duel-tag"><b>${tr.rol==="duur"?"Dit was de dure fles":"Dit was de goedkope fles"}</b>${tr.prijs?` <span class="mono">${euro(tr.prijs)}</span>`:""}</p>`:"";
+  if(!rows.length&&!duel)return "";
+  return `<div class="panel raad-panel"><h3>${tr.rol?"Duel: duur tegen goedkoop":"Raad de wijn"}</h3>${duel}
+    ${rows.length?`<div class="kv"><div><span>Land</span><b>${esc(tr.land||"–")}</b></div><div><span>Druif</span><b>${esc(tr.names.slice(0,3).join(", ")||"–")}</b></div></div>
+    <h3 style="margin-top:12px">Gokken van de groep</h3><div class="raad-list">${rows.sort((x,y)=>y.r.good-x.r.good).map(({a,r})=>`<div class="raad-row"><b>${who(a.uid)}</b><div class="chips">${r.list.map(x=>`<span class="chip ${x.ok?"match":"miss"}" style="cursor:default">${x.ok?"✓":"✗"} ${esc(x.mine)}</span>`).join("")}</div></div>`).join("")}</div>`:""}
+  </div>`;
+}
+/* ---------- duel: duur tegen goedkoop ---------- */
+function duelPairs(){
+  const th=S.next||{},key=S.catalog.length+"|"+(th.stijl||"")+"|"+(th.land||"");
+  if(S._dpKey===key&&S._dp)return S._dp;
+  const mk=C=>{const by={};C.filter(c=>c.prijs>0&&c.kleur&&c.regio).forEach(c=>{const k=c.land+"|"+c.regio+"|"+c.kleur+"|"+styleKey(c.stijl);(by[k]=by[k]||[]).push(c)});
+    const out=[];Object.values(by).forEach(g=>{const ch=g.filter(c=>c.prijs<=15),de=g.filter(c=>c.prijs>=25&&c.prijs<=250);ch.forEach(a=>de.forEach(b=>{if(b.prijs>=3*a.prijs)out.push([a,b])}))});return out};
+  let P=th.stijl||th.land?mk(S.catalog.filter(c=>inGroup(c,th.stijl)&&(!th.land||c.land===th.land))):[];
+  S._dpTheme=P.length>0;if(!P.length)P=mk(S.catalog);
+  for(let i=P.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[P[i],P[j]]=[P[j],P[i]]}
+  S._dp=P;S._dpKey=key;S.duelIdx=0;return P;
+}
+function duelPanel(){
+  const P=duelPairs();if(!P.length)return "";const [g,d]=P[(S.duelIdx||0)%P.length];
+  return `<details class="panel duel" id="duel-box"${S.duelOpen?" open":""}><summary><b>Duel: duur tegen goedkoop</b><span class="note">Twee wijnen uit dezelfde streek, blind geproefd. Wie proeft welke de dure is?</span></summary>
+    ${S._dpTheme&&S.next&&S.next.naam?`<p class="note">Past bij het thema <b>${esc(S.next.naam)}</b></p>`:""}
+    <div class="duel-pair">${[["Goedkoop",g],["Duur",d]].map(([l,c])=>`<div class="duel-row"><span class="duel-lbl">${l}</span><div class="row-main"><b>${esc(c.naam)}</b><span>${esc(origin(c))}</span></div><span class="mono duel-prijs">${euro(c.prijs)}</span></div>`).join("")}</div>
+    <p class="note">Je ziet zelf welke wijn welke is; de rest van de groep proeft blind. Na het onthullen zie je wie het goed had en welke fles de groep lekkerder vond.</p>
+    <div class="next-act"><button type="button" class="btn ghost small" data-duel-next>Ander duo</button>${S.canWrite&&S.db&&S.me?`<button type="button" class="btn amber small" data-duel-start>Start duel</button>`:""}</div></details>`;
+}
+function duels(ts){
+  const m={};ts.forEach(t=>{if(t.duel&&t.duel.id&&!t.masked)(m[t.duel.id]=m[t.duel.id]||{})[t.duel.rol]=t});
+  return Object.values(m).filter(d=>d.duur&&d.goedkoop).map(d=>{
+    const ad=answersFor(d.duur.id),ag=answersFor(d.goedkoop.id),per={};
+    [...ad,...ag].filter(a=>a.duelGok).forEach(a=>{(per[a.uid]=per[a.uid]||[]).push(a.duelGok===(a.tid===d.duur.id?"duur":"goedkoop"))});
+    const v=Object.values(per);
+    return {...d,pd:raadTruth(d.duur.id)?.prijs||0,pg:raadTruth(d.goedkoop.id)?.prijs||0,sd:avg(ad,"score"),sg:avg(ag,"score"),n:v.length,ok:v.filter(x=>x.every(Boolean)).length};
+  });
+}
+function duelHtml(ts){
+  return duels(ts).map(d=>`<div class="panel duel"><h3>Duur tegen goedkoop</h3><div class="duel-pair">
+    ${[["Duur",d.duur,d.pd,d.sd],["Goedkoop",d.goedkoop,d.pg,d.sg]].map(([l,t,p,s])=>`<button class="duel-row row-btn" data-open="${esc(t.id)}"><span class="duel-lbl">${l}</span><div class="row-main"><b>${esc(t.naam)}</b><span>${esc(t.brouwerij||"")}</span></div><span class="mono duel-prijs">${p?euro(p):""}</span>${s?`<span class="pill done">${fmt(s)}</span>`:`<span class="pill todo">Geen cijfer</span>`}</button>`).join("")}</div>
+    ${d.sd&&d.sg?`<p class="duel-verdict"><b>${d.sg>d.sd?"De goedkope fles won!":d.sd>d.sg?"De dure fles won.":"Gelijkspel."}</b></p>`:`<p class="note">Nog geen cijfers voor beide wijnen.</p>`}
+    ${d.n?`<p class="note">${d.ok} van ${d.n} proevers wisten welke de dure was.</p>`:""}</div>`).join("");
+}
+function bindDuel(){
+  const box=document.getElementById("duel-box");if(box)box.ontoggle=()=>{S.duelOpen=box.open};
+  document.querySelectorAll("[data-duel-next]").forEach(b=>b.onclick=()=>{S.duelIdx=(S.duelIdx||0)+1;S.duelOpen=true;render()});
+  document.querySelectorAll("[data-duel-start]").forEach(b=>b.onclick=async()=>{
+    if(!S.me){toast("Log in bij claude.ai om een proeverij te starten.");return}
+    if(b.dataset.confirm!=="1"){b.dataset.confirm="1";b.textContent="Zeker? Tik nogmaals";return}
+    const P=duelPairs();if(!P.length)return;const [g,d]=P[(S.duelIdx||0)%P.length];
+    b.disabled=true;b.textContent="Versturen…";
+    const id="d"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+    const order=Math.random()<.5?[["goedkoop",g],["duur",d]]:[["duur",d],["goedkoop",g]];
+    try{for(const [rol,c] of order)await createTasting({...c,omschrijving:"",__duel:{id,rol}},"");
+      S.tab="feed";S.tid=null;S.duelOpen=false;S.duelIdx=(S.duelIdx||0)+1;render();window.scrollTo(0,0);toast("Duel gestart: twee wijnen staan klaar om blind te proeven")}
+    catch(e){b.disabled=false;b.textContent="Start duel";toast("Duel starten mislukt.")}
+  });
+}
+
 function avg(list,k){const v=list.map(a=>a[k]).filter(x=>typeof x==="number"&&x>0);return v.length?v.reduce((s,x)=>s+x,0)/v.length:0}
 function mode(list,k){const c={};list.forEach(a=>{if(a[k])c[a[k]]=(c[a[k]]||0)+1});return Object.entries(c).sort((a,b)=>b[1]-a[1])[0]?.[0]||""}
 
-function closeness(a,described){const fz=a&&a.id&&S.frozenPA&&S.frozenPA[a.id];if(fz)return {hits:fz.hits,pct:fz.pct};if(!described.size)return null;const picked=new Set([...(a.aroma||[]),...(a.smaak||[])]);const hits=[...picked].filter(x=>described.has(x)).length;return {hits,pct:Math.round(200*hits/(picked.size+described.size))}}
+function aromaCloseness(a,described){const fz=a&&a.id&&S.frozenPA&&S.frozenPA[a.id];if(fz)return {hits:fz.hits,pct:fz.pct};if(!described.size)return null;const picked=new Set([...(a.aroma||[]),...(a.smaak||[])]);const hits=[...picked].filter(x=>described.has(x)).length;return {hits,pct:Math.round(200*hits/(picked.size+described.size))}}
 const crownName=html=>`<span class="crowned"><svg class="champ" viewBox="0 0 32 44" aria-hidden="true"><path d="M6 11h18l1.4-8-5 4L16 1l-4.4 6-5-4z" fill="#D9A21B"/><rect x="6" y="11" width="18" height="2" rx="1" fill="#D9A21B"/><path d="M8 16h16c0 8-3.2 12-8 12s-8-4-8-12z" fill="#F4EEF3" stroke="#6E1023" stroke-width="1.4"/><path d="M8.7 20h14.6c-.9 5-3.4 8-7.3 8s-6.4-3-7.3-8z" fill="#6E1A2D"/><path d="M16 28v10M11 41h10" stroke="#6E1023" stroke-width="1.8" stroke-linecap="round"/><path d="M11 18.5c.3 2 .8 3.4 1.6 4.6" stroke="#fff" stroke-opacity=".6" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg><span class="sr">Winnaar: </span>${html}</span>`;
 function rankingHtml(rows,title,note){if(!rows.length)return "";return `<div class="panel"><h3>${title}</h3><ol class="rank">${rows.map((r,i)=>`<li${r.uid===S.me?' class="me"':''}><span class="pos mono">${i+1}</span><img data-uid="${esc(r.uid)}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><b>${i===0?crownName(who(r.uid)):who(r.uid)}</b><span class="mono rank-val">${r.pct}%</span><span class="rank-sub">${esc(r.sub)}</span></li>`).join("")}</ol><p class="note">${note}</p></div>`}
 function globalRanking(){const per={};S.answers.forEach(a=>{const t=S.tastings.find(x=>x.id===a.tid);if(!t)return;const c=closeness(a,new Set(beerOf(t).smaken||[]));if(!c)return;(per[a.uid]=per[a.uid]||[]).push(c.pct)});
@@ -1562,8 +1659,9 @@ function answerCard(a,described,ref){
   const tagRow=described.size?`<tr class="tags"><th>Geur &amp; smaak</th><td colspan="3">
       <div class="cmp"><span class="cmp-l">Gekozen</span>${picked.length?`<div class="chips">${picked.map(x=>`<span class="chip ${described.has(x)?"match":"miss"}">${described.has(x)?"✓":"✗"} ${esc(x)}</span>`).join("")}</div>`:'<span class="muted">Niets gekozen</span>'}</div>
       <div class="cmp"><span class="cmp-l">Juist</span><div class="chips">${[...described].map(x=>`<span class="chip ${picked.includes(x)?"match":"ghost"}">${esc(x)}</span>`).join("")}</div></div></td></tr>`:"";
-  const c=closeness(a,described);
-  return `<details class="ans"${a.uid===S.me?" open":""}><summary><img data-uid="${esc(a.uid)}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><span class="ans-name"><b>${who(a.uid)}</b><small>${c?`${c.hits} van ${described.size} aroma's goed`:""}${tot?`${c?" · ":""}${good} van ${tot} profielvragen goed`:""}</small></span><span class="mono ans-score">${fmt(a.score)}</span></summary>
+  const rsc=raadScore(a);if(rsc)rsc.list.forEach(x=>row(x.label,esc(x.mine),esc(x.juist),x.ok?"ok":"no"));
+  const c=aromaCloseness(a,described);
+  return `<details class="ans"${a.uid===S.me?" open":""}><summary><img data-uid="${esc(a.uid)}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><span class="ans-name"><b>${who(a.uid)}</b><small>${c?`${c.hits} van ${described.size} aroma's goed`:""}${tot?`${c?" · ":""}${good} van ${tot} profielvragen goed`:""}${rsc?`${c||tot?" · ":""}${rsc.good} van ${rsc.tot} geraden`:""}</small></span><span class="mono ans-score">${fmt(a.score)}</span></summary>
     <div class="cmp-wrap"><table class="cmp-table"><thead><tr><th></th><th>Gekozen</th><th>Juist</th><th></th></tr></thead><tbody>
       ${rows.join("")}${tagRow}
       <tr><th>Geurintensiteit</th><td>${dots(a.aromaInt)}</td><td>${dash}</td><td></td></tr>
@@ -1675,6 +1773,7 @@ function avondText(k){
   L.push(`🍷 Wijnproeverij · ${avondLabel(k)}`);L.push("");
   if(st.rank[0])L.push(`👑 Winnaar van de avond: ${plainName(st.rank[0].uid)} (${st.rank[0].pct}% treffers)`);
   if(st.beers[0])L.push(`🏆 Beste wijn: ${st.beers[0].t.naam} (${fmt(st.beers[0].avg)})`);
+  duels(ts).forEach(d=>{if(d.sd&&d.sg)L.push(`💶 Duel: ${d.sg>d.sd?"de goedkope fles won":d.sd>d.sg?"de dure fles won":"gelijkspel"} · ${d.goedkoop.naam}${d.pg?` (${euro(d.pg)})`:""} ${fmt(d.sg)} tegen ${d.duur.naam}${d.pd?` (${euro(d.pd)})`:""} ${fmt(d.sd)}${d.n?` · ${d.ok} van ${d.n} raadden de dure`:""}`)});
   L.push("");L.push(`Geproefd (${ts.length}):`);
   ts.forEach((t,i)=>{const b=st.beers.find(x=>x.t.id===t.id);L.push(`${i+1}. ${t.naam}${t.brouwerij?" – "+t.brouwerij:""}${b?` · ${fmt(b.avg)} (${b.n}×)`:" · nog geen cijfer"}`)});
   if(st.rank.length){L.push("");L.push("Wie proefde het best:");st.rank.forEach((r,i)=>L.push(`${i+1}. ${plainName(r.uid)} · ${r.pct}%`))}
@@ -1698,6 +1797,7 @@ function viewAvond(k){
   ${w?`<div class="winner"><div class="winner-crown"><svg class="champ" viewBox="0 0 32 44" aria-hidden="true"><path d="M6 11h18l1.4-8-5 4L16 1l-4.4 6-5-4z" fill="#D9A21B"/><rect x="6" y="11" width="18" height="2" rx="1" fill="#D9A21B"/><path d="M8 16h16c0 8-3.2 12-8 12s-8-4-8-12z" fill="#F4EEF3" stroke="#6E1023" stroke-width="1.4"/><path d="M8.7 20h14.6c-.9 5-3.4 8-7.3 8s-6.4-3-7.3-8z" fill="#6E1A2D"/><path d="M16 28v10M11 41h10" stroke="#6E1023" stroke-width="1.8" stroke-linecap="round"/><path d="M11 18.5c.3 2 .8 3.4 1.6 4.6" stroke="#fff" stroke-opacity=".6" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></div><img data-uid="${esc(w.uid)}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><div class="winner-label">Winnaar van de avond</div><div class="winner-name">${who(w.uid)}</div><p class="note">${w.pct}% treffers over ${w.n} ${w.n===1?"wijn":"wijnen"}</p><button type="button" class="btn ghost small" data-confetti>Proost! Nog een keer confetti</button></div>`
     :`<div class="empty"><p class="muted">Er is nog geen winnaar: vul de vragenlijsten in.</p></div>`}
   ${rankingHtml(st.rank,"Ranglijst van de avond","Gemiddelde treffer-score over de wijnen van deze avond.")}
+  ${duelHtml(ts)}
   <div class="panel"><h3>Wijnen van de avond</h3><div class="list">${ts.map(t=>{const b=st.beers.find(x=>x.t.id===t.id),top=st.beers[0]&&st.beers[0].t.id===t.id;
     return `<button class="row-btn" data-open="${esc(t.id)}">${thumbHtml(t.thumb,t.naam,"",beerOf(t).stijl)}<div class="row-main"><b>${top?crownName(esc(t.naam)):esc(t.naam)}</b><span>${esc(origin(t))}</span></div>${b?`<span class="pill done">${fmt(b.avg)} · ${b.n}×</span>`:`<span class="pill todo">Geen cijfer</span>`}</button>`}).join("")}</div></div>
   <div class="panel"><h3>Uitslag delen</h3><p class="note">Kopieer de uitslag en plak hem in je groepsapp.</p>
@@ -1994,7 +2094,7 @@ function viewResults(t,mine){
   const hits=[...mineTags].filter(x=>described.has(x)).length;
   const col=COLORS.find(c=>c.k===mode(as,"kleur"));
   const comments=as.filter(a=>a.opmerking).sort((a,b)=>(b.at||0)-(a.at||0));
-  return `<div class="panel"><h3>Groepsoordeel</h3>
+  return `${raadPanel(t,as)}<div class="panel"><h3>Groepsoordeel</h3>
     <div class="scorebox"><span class="score-out">${fmt(sc)}</span><div style="display:flex;flex-direction:column;gap:6px;padding-bottom:8px"><div class="caps">${caps}</div><span class="muted">${as.length} ${as.length===1?"proever":"proevers"} · jij gaf ${fmt(mine.score)}</span></div></div>
     <div class="kv">${col?`<div><span>Kleur</span><b>${col.n} · ${col.ebc}</b></div>`:""}${mode(as,"helderheid")?`<div><span>Helderheid</span><b>${esc(mode(as,"helderheid"))}</b></div>`:""}${mode(as,"afdronk")?`<div><span>Afdronk</span><b>${esc(mode(as,"afdronk"))}</b></div>`:""}</div>
     <div class="bars">${bars}</div>
@@ -2048,6 +2148,7 @@ function maybeCelebrate(){
   else if(S.tab==="home"&&!S.wheel&&!S.touring){const w=lastWinner();if(w)celebrateOnce("avond:"+w.k)}
 }
 function bind(){
+  bindDuel();
   document.querySelectorAll("[data-confetti]").forEach(b=>b.onclick=()=>beerConfetti());
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.go;S.tid=null;S.wheel=false;render()});
   document.querySelectorAll("[data-vote]").forEach(b=>b.onclick=async()=>{const iso=b.dataset.vote,val=b.dataset.val,cur=myVote(iso);
@@ -2156,7 +2257,7 @@ function bindForm(f){
     if(btn.dataset.confirm!=="1"){btn.dataset.confirm="1";btn.textContent="Zeker weten? Tik nogmaals om op te slaan";err.hidden=true;return}
     btn.disabled=true; btn.textContent="Opslaan…";
     try{const ex=await S.db.doc("answers/"+seg(tid+"__"+S.me)).get();if(ex.exists){upsertLocal(S.answers,{id:ex.id,...ex.data()});delete S.drafts[tid];render();toast("Je had deze vragenlijst al ingevuld.");return}}catch(x){}
-    const doc={tid,uid:S.me,kleur:d.kleur,helderheid:d.helderheid,schuim:d.schuim,aromaInt:d.aromaInt,aroma:d.aroma,zoet:d.zoet,bitter:d.bitter,zuur:d.zuur,smaak:d.smaak,body:d.body,koolzuur:d.koolzuur,afdronk:d.afdronk,score:d.score,opmerking:d.opmerking,at:Date.now()};
+    const doc={tid,uid:S.me,kleur:d.kleur,helderheid:d.helderheid,schuim:d.schuim,aromaInt:d.aromaInt,aroma:d.aroma,zoet:d.zoet,bitter:d.bitter,zuur:d.zuur,smaak:d.smaak,body:d.body,koolzuur:d.koolzuur,afdronk:d.afdronk,score:d.score,opmerking:d.opmerking,at:Date.now(),...(d.raadLand?{raadLand:d.raadLand}:{}),...(d.raadDruif?{raadDruif:d.raadDruif}:{}),...(d.duelGok?{duelGok:d.duelGok}:{})};
     try{await S.db.doc("answers/"+seg(tid+"__"+S.me)).set(doc);
       upsertLocal(S.answers,{id:seg(tid+"__"+S.me),...doc});
       delete S.drafts[tid]; S.editing=false; render(); window.scrollTo(0,0);
@@ -2216,6 +2317,7 @@ async function createTasting(b,thumb){
   const t={beerKey:key,naam:b.naam,brouwerij:b.brouwerij||"",plaats:b.plaats||"",land:b.land||"",thumb:thumb||"",by:S.me,at:Date.now()};
   if(b.jaargang)t.jaargang=String(b.jaargang).slice(0,4);
   if(S.next&&S.next.blind&&!S.demo){t.blind=true;t.nr=blindNr()}
+  if(b.__duel){t.duel={id:String(b.__duel.id).slice(0,40),rol:b.__duel.rol==="duur"?"duur":"goedkoop"};if(!S.demo&&!t.blind){t.blind=true;t.nr=blindNr()}}
   if(S.next&&S.next.locatie)t.locatie=String(S.next.locatie).slice(0,60);
   await S.db.doc("tastings/"+tid).set(t);
   if(!S.tRaw)S.tRaw=[...S.tastings];upsertLocal(S.tRaw,{id:tid,...t});S.tRaw.sort((a,b)=>(b.at||0)-(a.at||0));
