@@ -190,7 +190,7 @@ input[type=range]{width:100%;accent-color:var(--amber)}
 .beer-row>.row-info[open]{grid-column:1/-1}
 .when{font-size:12px;color:var(--amber);margin:2px 0}
 @media (max-width:480px){.stats{grid-template-columns:repeat(3,1fr)}.stats .wide{grid-column:1/-1}}
-.seg{display:flex;background:var(--sunk);border-radius:999px;padding:3px;gap:3px}
+.seg-count{font-size:11px;opacity:.75;margin-left:2px}.seg{display:flex;background:var(--sunk);border-radius:999px;padding:3px;gap:3px}
 .seg button{flex:1;appearance:none;border:0;background:none;padding:8px 10px;border-radius:999px;font:600 13px var(--f-body);color:var(--muted);cursor:pointer}
 .seg button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .seg button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
@@ -1236,7 +1236,7 @@ const TAB_TOURS={
   home:[["Home: alles over de volgende proeverij",2600],["De vakjes: wie draaide, de categorie, de datum, de proefwijze en de locatie",[".h-tiles",3600]],["Locatie en proefwijze kun je hier aanpassen",[".loc-row",3200]],["Datum vast? Zet hem met één tik in je agenda",[".cal-btns",3400]],["Onderaan: de ranglijst van winnaars",[".rank",3200]]],
   feed:[["Proeven: hier vul je de vragenlijsten in",2600],["Bovenaan wat nog op jou wacht",[".list",3000]],["Door jou geproefd, per wijnstijl",[".grp-list",2400]],["tap:.grp summary","Tik op een stijl: het getal is het aantal wijnen",2600],["open","Een proeverij openen",2200],["fill","Zo vul je de vragenlijst in"]],
   scan:[["Scannen: maak een foto van het etiket",3000],["scanDemo","De wijn en de herkomst worden herkend",3200],["Klopt het niet? Pas het aan. Dan start je de proeverij",[".reveal",3200]],["Bij blind proeven zien de anderen alleen Wijn 1, 2, 3…",2800]],
-  res:[["Uitslag: wie proeft het best?",2600],["De ranglijst over alle wijnen",[".rank",3200]],["Smaakprofiel van de groep",[".pbar",3000]],["Badges: brons, zilver, goud en platina",[".badges",3600]],["avond","Elke proefavond met winnaar, kroon en confetti",4200]],
+  res:[["Uitslag: wie proeft het best?",2600],["De ranglijst over alle wijnen",[".rank",3200]],["Smaakprofiel van de groep",[".pbar",3000]],["tap:[data-restab=\"badges\"]","Badges staan in een eigen tabje: brons, zilver, goud en platina",3200],["tap:[data-restab=\"uitslag\"]","",700],["avond","Elke proefavond met winnaar, kroon en confetti",4200]],
   recs:[["Tips: wijnen die bij jullie smaak passen",2800],["Voor jou: alleen jij ziet deze lijst",[".panel",3200]],["En voor de hele groep",[".panel:last-of-type",3200]]],
   map:[["Kaart: waar komen jullie wijnen vandaan?",3200],["regio:eu","Zoom in per werelddeel, bijvoorbeeld Europa",3200],["Onder de kaart de landen met hun wijnen",[".map-list",3000]]],
   agenda:[["Agenda: de volgende proefavond",2800],["Locatie, proefwijze en agendaknoppen",[".cal-btns",3600]],["En alle eerdere proefavonden met hun winnaar",["section",3200]]],
@@ -1415,7 +1415,7 @@ function viewHome(){
   </div>
   ${mgHomeHtml()}
   ${winsHtml()||`<div class="panel"><h3>Ranglijst</h3><p class="muted">Na de eerste proefavond zie je hier wie de meeste avonden wint.</p></div>`}
-  <button class="linkbtn" data-go="res" style="align-self:flex-start">Alle uitslagen en badges →</button>`;
+  <button class="linkbtn" data-go="res" style="align-self:flex-start">Alle uitslagen →</button><button class="linkbtn" data-go-badges style="align-self:flex-start">Mijn badges →</button>`;
 }
 function modeStep(){const t=S.next||{},has=!!(t.stijl||t.land),can=has&&S.canWrite&&S.db&&S.me,b=!!t.blind;
   return `<div class="step mode-step${has?" done":""}"><span class="step-n mono">3</span><div><small>Proefwijze · kies zelf, geen rad</small>
@@ -2084,8 +2084,11 @@ function winsHtml(){
     <ol class="rank">${rows.map((r,i)=>`<li${r.uid===S.me?' class="me"':''}><span class="pos mono">${i+1}</span><img data-uid="${esc(r.uid)}" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><b>${r.w&&r.w===top?crownName(who(r.uid)):who(r.uid)}</b><span class="mono rank-val">${r.w}×</span><span class="rank-sub">${r.w===1?"1 avond gewonnen":r.w+" avonden gewonnen"} · ${r.p} meegedaan</span></li>`).join("")}</ol>
     <p class="note">Wie de meeste proefavonden wint, staat bovenaan. Bij gelijkspel telt wie in minder avonden zijn overwinningen haalde.</p></div>`;
 }
+function resSeg(){const sel=S.resTab==="badges"?"badges":"uitslag";let got=0,tot=0;try{if(S.me){const bs=badgeData(S.me);got=bs.filter(b=>b.ok).length;tot=bs.length}}catch(e){}
+  return `<div class="seg" role="tablist" aria-label="Resultaten">${[["uitslag","Uitslagen"],["badges","Badges"]].map(([k,l])=>`<button type="button" role="tab" data-restab="${k}" aria-selected="${sel===k}">${l}${k==="badges"&&tot?` <span class="mono seg-count">${got}/${tot}</span>`:""}</button>`).join("")}</div>`}
 function viewResultsTab(){
-  const head=`<div><h2>Resultaten</h2><p class="muted">Alle uitslagen van de groep op één plek.</p></div>`;
+  const head=`<div><h2>Resultaten</h2><p class="muted">Alle uitslagen van de groep op één plek.</p></div>${resSeg()}`;
+  if(S.resTab==="badges")return head+(badgesHtml()||`<div class="empty"><p class="muted">Log in om je badges te zien.</p></div>`);
   const rated=S.tastings.filter(t=>answersFor(t.id).length);
   if(!rated.length)return head+`<div class="empty"><p class="muted">Zodra er een vragenlijst is ingevuld, verschijnen hier de cijfers, de beste wijnen en wie het best proeft.</p><button class="btn amber" data-go="feed">Naar de proeverijen</button></div>`;
   const totalAns=S.answers.filter(a=>S.tastings.some(t=>t.id===a.tid)).length;
@@ -2108,7 +2111,6 @@ function viewResultsTab(){
     ${top[0]?`<div class="wide"><b>${esc(top[0].b.naam)}</b><span>beste wijn · ${fmt(top[0].s.avg)}</span></div>`:""}</div>
   ${winsHtml()}
   ${profileHtml()}
-  ${badgesHtml()}
   <div class="panel map-teaser"><div class="badges-head"><h3>Wereldkaart</h3><span class="note">${mapData().length} ${mapData().length===1?"land":"landen"} geproefd</span></div><button class="btn ghost small" data-go="map" style="align-self:flex-start">Bekijk de kaart per regio →</button></div>
   ${rankingHtml(globalRanking(),"Beste proevers","Gemiddelde treffer-score over alle geproefde wijnen: hoeveel van je gekozen geur- en smaaktermen in de omschrijving staan.")}
   ${topHtml}
@@ -2182,6 +2184,8 @@ function maybeCelebrate(){
   else if(S.tab==="home"&&!S.wheel&&!S.touring){const w=lastWinner();if(w)celebrateOnce("avond:"+w.k)}
 }
 function bind(){
+  document.querySelectorAll("[data-go-badges]").forEach(b=>b.onclick=()=>{S.tab="res";S.resTab="badges";S.tid=null;S.avond=null;S.wheel=false;render();window.scrollTo(0,0)});
+  document.querySelectorAll("[data-restab]").forEach(b=>b.onclick=()=>{S.resTab=b.dataset.restab;render();window.scrollTo(0,0)});
   bindDuel();
   document.querySelectorAll("[data-confetti]").forEach(b=>b.onclick=()=>beerConfetti());
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.go;S.tid=null;S.wheel=false;render()});
